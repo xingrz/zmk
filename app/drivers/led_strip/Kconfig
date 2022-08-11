@@ -2,3 +2,4 @@
 # SPDX-License-Identifier: MIT
 
 rsource "Kconfig.composite"
+rsource "Kconfig.ckled2001"
