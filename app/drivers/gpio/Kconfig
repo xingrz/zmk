@@ -4,3 +4,4 @@ menuconfig ZMK_DRIVERS_GPIO
 rsource "Kconfig.mcp23017"
 rsource "Kconfig.max7318"
 rsource "Kconfig.595"
+rsource "Kconfig.snx4hc595"
