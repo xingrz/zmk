@@ -18,4 +18,9 @@ config ZMK_RGB_UNDERGLOW
 	select PWM
 	select WS2812_STRIP_PWM
 
+config ZMK_DISPLAY
+	select I2C
+	select SSD1306
+	select SSD1306_REVERSE_MODE
+
 endif # BOARD_KB16
