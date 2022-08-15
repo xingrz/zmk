@@ -1,0 +1,11 @@
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+config WS2812_STRIP_PWM
+	bool "Enable the PWM driver"
+	depends on SOC_FAMILY_STM32
+	select PWM
+	select USE_STM32_LL_TIM
+	help
+	  The PWM driver does hardware timer specific functions,
+	  and is not available on all SoCs.

@@ -1,0 +1,40 @@
+# Copyright (c) 2019, Nordic Semiconductor ASA
+# Copyright (c) 2022, Radiotechnical Systems LLC
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  Worldsemi WS2812 LED strip, PWM binding
+  Driver bindings for controlling a WS2812 or compatible LED
+  strip with a PWM.
+  The PWM driver should be usable as long as a zephyr PWM API driver
+  is available for your board.
+  Use of this driver implies no internal memory overhead.
+compatible: "worldsemi,ws2812-pwm"
+
+include: [base.yaml, ws2812.yaml]
+
+properties:
+  label:
+    required: true
+
+  pwms:
+    required: true
+    type: phandle-array
+
+  t0h-ns:
+    type: int
+    required: false
+    default: 350
+    description: logic-zero pulse duration in ns.
+
+  t1h-ns:
+    type: int
+    required: false
+    default: 700
+    description: logic-one pulse duration in ns.
+
+  period-ns:
+    type: int
+    required: false
+    default: 1250
+    description: period (TL+TH) in ns.
