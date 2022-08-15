@@ -1,0 +1,7 @@
+identifier: kb16
+name: KB16-01
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb

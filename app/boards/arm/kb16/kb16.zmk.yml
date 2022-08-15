@@ -1,0 +1,12 @@
+file_format: "1"
+id: kb16
+name: KB16-01
+type: board
+arch: arm
+features:
+  - keys
+  - underglow
+  - encoders
+outputs:
+  - usb
+url: https://naughtyboards.com/products/doio-kb16-01-16-keys-mini-keyboard-gasket-knob-led-screen

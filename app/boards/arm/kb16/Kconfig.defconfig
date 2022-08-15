@@ -1,0 +1,21 @@
+# KB16-01 board configuration
+
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+if BOARD_KB16
+
+config BOARD
+	default "kb16"
+
+config ZMK_KEYBOARD_NAME
+	default "KB16-01"
+
+config ZMK_USB
+	default y
+
+config ZMK_RGB_UNDERGLOW
+	select PWM
+	select WS2812_STRIP_PWM
+
+endif # BOARD_KB16
