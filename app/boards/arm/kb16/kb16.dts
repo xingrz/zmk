@@ -128,9 +128,14 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		code_partition: partition@0 {
+		bootloader_partition: partition@0 {
+			label = "bootloader";
+			reg = <DT_SIZE_K(0) DT_SIZE_K(4)>;
+		};
+
+		code_partition: partition@1000 {
 			label = "code_partition";
-			reg = <DT_SIZE_K(0) DT_SIZE_K(126)>;
+			reg = <DT_SIZE_K(4) DT_SIZE_K(122)>;
 		};
 
 		storage_partition: partition@1f800 {
