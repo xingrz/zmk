@@ -1,0 +1,9 @@
+file_format: "1"
+id: stm32_f1
+name: STM32 F1
+type: board
+arch: arm
+features:
+  - keys
+outputs:
+  - usb

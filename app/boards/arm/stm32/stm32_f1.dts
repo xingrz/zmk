@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2022 The ZMK Contributors
+ * SPDX-License-Identifier: MIT
+ */
+
+/dts-v1/;
+#include <st/f1/stm32f103Xb.dtsi>
+#include <st/f1/stm32f103c(8-b)tx-pinctrl.dtsi>
+
+#include <freq.h>
+#include <mem.h>
+
+#include "common.dtsi"
+
+/ {
+	model = "STM32 F1";
+	compatible = "st,stm32f103";
+};
+
+&sram0 {
+	reg = <0x20000000 DT_SIZE_K(20)>;
+};
+
+&flash0 {
+	reg = <0x08000000 DT_SIZE_K(64)>;
+};
+
+&clk_hse {
+	clock-frequency = <DT_FREQ_M(8)>;
+	status = "okay";
+};
+
+&pll {
+	mul = <9>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(72)>;
+	ahb-prescaler = <1>;
+	apb1-prescaler = <2>;
+	apb2-prescaler = <1>;
+};

@@ -1,0 +1,7 @@
+identifier: stm32_l4
+name: STM32 L4
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb

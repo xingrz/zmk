@@ -1,0 +1,7 @@
+identifier: stm32_f1
+name: STM32 F1
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb

@@ -1,0 +1,15 @@
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+if BOARD_STM32_F1 || BOARD_STM32_L4
+
+config BOARD
+	default "stm32"
+
+config ZMK_KEYBOARD_NAME
+	default "STM32"
+
+config ZMK_USB
+	default y
+
+endif

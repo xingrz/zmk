@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2022 The ZMK Contributors
+ * SPDX-License-Identifier: MIT
+ */
+
+/dts-v1/;
+#include <st/l4/stm32l432.dtsi>
+#include <st/l4/stm32l432k(b-c)ux-pinctrl.dtsi>
+
+#include <freq.h>
+#include <mem.h>
+
+#include "common.dtsi"
+
+/ {
+	model = "STM32 L4";
+	compatible = "st,stm32l432";
+};
+
+&sram0 {
+	reg = <0x20000000 DT_SIZE_K(48)>;
+};
+
+&flash0 {
+	reg = <0x08000000 DT_SIZE_K(128)>;
+};
+
+&clk_hsi {
+	status = "okay";
+};
+
+&pll {
+	div-m = <1>;
+	mul-n = <20>;
+	div-p = <7>;
+	div-q = <2>;
+	div-r = <4>;
+	clocks = <&clk_hsi>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(80)>;
+	ahb-prescaler = <1>;
+	apb1-prescaler = <1>;
+	apb2-prescaler = <1>;
+};

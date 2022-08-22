@@ -1,0 +1,10 @@
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+config BOARD_STM32_F1
+	bool "STM32 F1"
+	depends on SOC_STM32F103XB
+
+config BOARD_STM32_L4
+	bool "STM32 L4"
+	depends on SOC_STM32L432XX
