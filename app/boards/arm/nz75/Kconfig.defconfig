@@ -1,0 +1,30 @@
+# NZ75 board configuration
+
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+if BOARD_NZ75
+
+config BOARD
+	default "nz75"
+
+config ZMK_KEYBOARD_NAME
+	default "NZ75"
+
+if USB_DEVICE_STACK
+
+config USB_NRFX
+	default y
+
+endif # USB_DEVICE_STACK
+
+config BT_CTLR
+	default BT
+
+config ZMK_BLE
+	default y
+
+config ZMK_USB
+	default y
+
+endif # BOARD_NZ75

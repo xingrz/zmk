@@ -1,0 +1,11 @@
+file_format: "1"
+id: nz75
+name: NZ75
+type: board
+arch: arm
+features:
+  - keys
+  - underglow
+outputs:
+  - usb
+  - ble

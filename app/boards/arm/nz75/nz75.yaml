@@ -1,0 +1,7 @@
+identifier: nz75
+name: NZ75
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
