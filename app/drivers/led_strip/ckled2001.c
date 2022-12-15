@@ -114,6 +114,8 @@ static int ckled2001_init(const struct device *dev) {
         return -ENODEV;
     }
 
+    k_usleep(300);
+
     // Set functions
     ckled2001_write_reg(dev, REG_SET_CMD_PAGE, FUNCTION_PAGE);
     ckled2001_write_reg(dev, REG_CONFIGRATION, MSKSW_SHUTDOWN_MODE);
