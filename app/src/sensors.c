@@ -32,7 +32,8 @@ struct sensors_data_item {
 
 static struct sensors_data_item sensors[] = {UTIL_LISTIFY(ZMK_KEYMAP_SENSORS_LEN, SENSOR_ITEM, 0)};
 
-static void zmk_sensors_trigger_handler(const struct device *dev, struct sensor_trigger *trigger) {
+static void zmk_sensors_trigger_handler(const struct device *dev,
+                                        const struct sensor_trigger *trigger) {
     int err;
     struct sensors_data_item *item = CONTAINER_OF(trigger, struct sensors_data_item, trigger);
 
