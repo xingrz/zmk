@@ -307,7 +307,7 @@ int zmk_rgb_underglow_get_state(bool *on_off) {
     return 0;
 }
 
-int zmk_rgb_underglow_on() {
+static int zmk_rgb_underglow_on_immediate() {
     if (!led_strip)
         return -ENODEV;
 
@@ -324,6 +324,11 @@ int zmk_rgb_underglow_on() {
     state.animation_step = 0;
     k_timer_start(&underglow_tick, K_NO_WAIT, K_MSEC(50));
 
+    return 0;
+}
+
+int zmk_rgb_underglow_on() {
+    zmk_rgb_underglow_on_immediate();
     return zmk_rgb_underglow_save_state();
 }
 
@@ -341,7 +346,7 @@ static void zmk_rgb_underglow_off_handler(struct k_work *work) {
 
 K_WORK_DEFINE(underglow_off_work, zmk_rgb_underglow_off_handler);
 
-int zmk_rgb_underglow_off() {
+static int zmk_rgb_underglow_off_immediate() {
     if (!led_strip)
         return -ENODEV;
 
@@ -359,6 +364,11 @@ int zmk_rgb_underglow_off() {
     k_timer_stop(&underglow_tick);
     state.on = false;
 
+    return 0;
+}
+
+int zmk_rgb_underglow_off() {
+    zmk_rgb_underglow_off_immediate();
     return zmk_rgb_underglow_save_state();
 }
 
@@ -483,11 +493,11 @@ static int rgb_underglow_auto_state(bool *prev_state, bool new_state) {
     if (new_state) {
         state.on = *prev_state;
         *prev_state = false;
-        return zmk_rgb_underglow_on();
+        return zmk_rgb_underglow_on_immediate();
     } else {
         state.on = false;
         *prev_state = true;
-        return zmk_rgb_underglow_off();
+        return zmk_rgb_underglow_off_immediate();
     }
 }
 
