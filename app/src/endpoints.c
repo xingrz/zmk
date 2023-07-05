@@ -13,6 +13,7 @@
 #include <dt-bindings/zmk/hid_usage_pages.h>
 #include <zmk/usb_hid.h>
 #include <zmk/hog.h>
+#include <zmk/ext_report.h>
 #include <zmk/event_manager.h>
 #include <zmk/events/ble_active_profile_changed.h>
 #include <zmk/events/usb_conn_state_changed.h>
@@ -22,7 +23,18 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define DEFAULT_ENDPOINT                                                                           \
-    COND_CODE_1(IS_ENABLED(CONFIG_ZMK_BLE), (ZMK_ENDPOINT_BLE), (ZMK_ENDPOINT_USB))
+    COND_CODE_1(IS_ENABLED(CONFIG_ZMK_EXT_REPORT), (ZMK_ENDPOINT_EXT),                             \
+                (COND_CODE_1(IS_ENABLED(CONFIG_ZMK_BLE), (ZMK_ENDPOINT_BLE), (ZMK_ENDPOINT_USB))))
+
+static const enum zmk_endpoint available_endpoints[] = {
+    ZMK_ENDPOINT_USB,
+#if IS_ENABLED(CONFIG_ZMK_BLE)
+    ZMK_ENDPOINT_BLE,
+#endif
+#if IS_ENABLED(CONFIG_ZMK_EXT_REPORT)
+    ZMK_ENDPOINT_EXT,
+#endif
+};
 
 static enum zmk_endpoint current_endpoint = DEFAULT_ENDPOINT;
 static enum zmk_endpoint preferred_endpoint =
@@ -65,8 +77,15 @@ int zmk_endpoints_select(enum zmk_endpoint endpoint) {
 enum zmk_endpoint zmk_endpoints_selected() { return current_endpoint; }
 
 int zmk_endpoints_toggle() {
-    enum zmk_endpoint new_endpoint =
-        (preferred_endpoint == ZMK_ENDPOINT_USB) ? ZMK_ENDPOINT_BLE : ZMK_ENDPOINT_USB;
+    enum zmk_endpoint new_endpoint = preferred_endpoint;
+
+    for (int i = 0; i < ARRAY_SIZE(available_endpoints); i++) {
+        if (available_endpoints[i] == preferred_endpoint) {
+            new_endpoint = available_endpoints[(i + 1) % ARRAY_SIZE(available_endpoints)];
+            break;
+        }
+    }
+
     return zmk_endpoints_select(new_endpoint);
 }
 
@@ -93,6 +112,16 @@ static int send_keyboard_report() {
         return err;
     }
 #endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
+
+#if IS_ENABLED(CONFIG_ZMK_EXT_REPORT)
+    case ZMK_ENDPOINT_EXT: {
+        int err = zmk_ext_send_keyboard_report(&keyboard_report->body);
+        if (err) {
+            LOG_ERR("FAILED TO SEND OVER EXT: %d", err);
+        }
+        return err;
+    }
+#endif /* IS_ENABLED(CONFIG_ZMK_EXT_REPORT) */
 
     default:
         LOG_ERR("Unsupported endpoint %d", current_endpoint);
@@ -123,6 +152,16 @@ static int send_consumer_report() {
         return err;
     }
 #endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
+
+#if IS_ENABLED(CONFIG_ZMK_EXT_REPORT)
+    case ZMK_ENDPOINT_EXT: {
+        int err = zmk_ext_send_consumer_report(&consumer_report->body);
+        if (err) {
+            LOG_ERR("FAILED TO SEND OVER EXT: %d", err);
+        }
+        return err;
+    }
+#endif /* IS_ENABLED(CONFIG_ZMK_EXT_REPORT) */
 
     default:
         LOG_ERR("Unsupported endpoint %d", current_endpoint);
@@ -189,36 +228,44 @@ static int zmk_endpoints_init(const struct device *_arg) {
     return 0;
 }
 
-static bool is_usb_ready() {
+static bool is_endpoint_ready(enum zmk_endpoint endpoint) {
+    switch (endpoint) {
+    case ZMK_ENDPOINT_USB:
 #if IS_ENABLED(CONFIG_ZMK_USB)
-    return zmk_usb_is_hid_ready();
+        return zmk_usb_is_hid_ready();
 #else
-    return false;
+        return false;
 #endif
-}
-
-static bool is_ble_ready() {
+    case ZMK_ENDPOINT_BLE:
 #if IS_ENABLED(CONFIG_ZMK_BLE)
-    return zmk_ble_active_profile_is_connected();
+        return zmk_ble_active_profile_is_connected();
 #else
-    return false;
+        return false;
 #endif
+    case ZMK_ENDPOINT_EXT:
+#if IS_ENABLED(CONFIG_ZMK_EXT_REPORT)
+        return zmk_ext_is_connected();
+#else
+        return false;
+#endif
+    default:
+        LOG_ERR("Unsupported endpoint %d", endpoint);
+        return false;
+    }
 }
 
 static enum zmk_endpoint get_selected_endpoint() {
-    if (is_ble_ready()) {
-        if (is_usb_ready()) {
-            LOG_DBG("Both endpoints are ready. Using %d", preferred_endpoint);
-            return preferred_endpoint;
-        }
-
-        LOG_DBG("Only BLE is ready.");
-        return ZMK_ENDPOINT_BLE;
+    if (is_endpoint_ready(preferred_endpoint)) {
+        LOG_DBG("Using preferred endpoint %d", preferred_endpoint);
+        return preferred_endpoint;
     }
 
-    if (is_usb_ready()) {
-        LOG_DBG("Only USB is ready.");
-        return ZMK_ENDPOINT_USB;
+    for (int i = 0; i < ARRAY_SIZE(available_endpoints); i++) {
+        enum zmk_endpoint endpoint = available_endpoints[i];
+        if (is_endpoint_ready(endpoint)) {
+            LOG_DBG("Using available endpoint %d", endpoint);
+            return endpoint;
+        }
     }
 
     LOG_DBG("No endpoints are ready.");

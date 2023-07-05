@@ -9,4 +9,5 @@
 enum zmk_endpoint {
     ZMK_ENDPOINT_USB,
     ZMK_ENDPOINT_BLE,
+    ZMK_ENDPOINT_EXT,
 };
