@@ -183,6 +183,10 @@ config BT_PERIPHERAL_PREF_TIMEOUT
 #ZMK_BLE
 endif
 
+config ZMK_BLE_EXT
+    bool "BLE (external)"
+    depends on !ZMK_BLE
+
 #Output Types
 endmenu
 
@@ -391,7 +395,7 @@ config ZMK_USB_INIT_PRIORITY
 #USB
 endif
 
-if ZMK_BLE || ZMK_SPLIT_BLE
+if ZMK_BLE || ZMK_SPLIT_BLE || ZMK_BLE_EXT
 
 config ZMK_BLE_INIT_PRIORITY
     int "BLE Init Priority"

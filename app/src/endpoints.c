@@ -22,7 +22,8 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define DEFAULT_ENDPOINT                                                                           \
-    COND_CODE_1(IS_ENABLED(CONFIG_ZMK_BLE), (ZMK_ENDPOINT_BLE), (ZMK_ENDPOINT_USB))
+    COND_CODE_1(IS_ENABLED(CONFIG_ZMK_BLE) || IS_ENABLED(CONFIG_ZMK_BLE_EXT), (ZMK_ENDPOINT_BLE),  \
+                (ZMK_ENDPOINT_USB))
 
 static enum zmk_endpoint current_endpoint = DEFAULT_ENDPOINT;
 static enum zmk_endpoint preferred_endpoint =
@@ -84,7 +85,7 @@ static int send_keyboard_report() {
     }
 #endif /* IS_ENABLED(CONFIG_ZMK_USB) */
 
-#if IS_ENABLED(CONFIG_ZMK_BLE)
+#if IS_ENABLED(CONFIG_ZMK_BLE) || IS_ENABLED(CONFIG_ZMK_BLE_EXT)
     case ZMK_ENDPOINT_BLE: {
         int err = zmk_hog_send_keyboard_report(&keyboard_report->body);
         if (err) {
@@ -92,7 +93,7 @@ static int send_keyboard_report() {
         }
         return err;
     }
-#endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
+#endif /* IS_ENABLED(CONFIG_ZMK_BLE) || IS_ENABLED(CONFIG_ZMK_BLE_EXT) */
 
     default:
         LOG_ERR("Unsupported endpoint %d", current_endpoint);
@@ -114,7 +115,7 @@ static int send_consumer_report() {
     }
 #endif /* IS_ENABLED(CONFIG_ZMK_USB) */
 
-#if IS_ENABLED(CONFIG_ZMK_BLE)
+#if IS_ENABLED(CONFIG_ZMK_BLE) || IS_ENABLED(CONFIG_ZMK_BLE_EXT)
     case ZMK_ENDPOINT_BLE: {
         int err = zmk_hog_send_consumer_report(&consumer_report->body);
         if (err) {
@@ -122,7 +123,7 @@ static int send_consumer_report() {
         }
         return err;
     }
-#endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
+#endif /* IS_ENABLED(CONFIG_ZMK_BLE) || IS_ENABLED(CONFIG_ZMK_BLE_EXT) */
 
     default:
         LOG_ERR("Unsupported endpoint %d", current_endpoint);
@@ -198,7 +199,7 @@ static bool is_usb_ready() {
 }
 
 static bool is_ble_ready() {
-#if IS_ENABLED(CONFIG_ZMK_BLE)
+#if IS_ENABLED(CONFIG_ZMK_BLE) || IS_ENABLED(CONFIG_ZMK_BLE_EXT)
     return zmk_ble_active_profile_is_connected();
 #else
     return false;
@@ -257,7 +258,7 @@ ZMK_LISTENER(endpoint_listener, endpoint_listener);
 #if IS_ENABLED(CONFIG_ZMK_USB)
 ZMK_SUBSCRIPTION(endpoint_listener, zmk_usb_conn_state_changed);
 #endif
-#if IS_ENABLED(CONFIG_ZMK_BLE)
+#if IS_ENABLED(CONFIG_ZMK_BLE) || IS_ENABLED(CONFIG_ZMK_BLE_EXT)
 ZMK_SUBSCRIPTION(endpoint_listener, zmk_ble_active_profile_changed);
 #endif
 
