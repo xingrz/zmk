@@ -191,10 +191,14 @@ static void zmk_rgb_underglow_tick(struct k_work *work) {
         break;
     }
 
+    unsigned int key = irq_lock();
+
     int err = led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
     if (err < 0) {
         LOG_ERR("Failed to update the RGB strip (%d)", err);
     }
+
+    irq_unlock(key);
 }
 
 K_WORK_DEFINE(underglow_tick_work, zmk_rgb_underglow_tick);
@@ -328,7 +332,11 @@ static void zmk_rgb_underglow_off_handler(struct k_work *work) {
         pixels[i] = (struct led_rgb){r : 0, g : 0, b : 0};
     }
 
+    unsigned int key = irq_lock();
+
     led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
+
+    irq_unlock(key);
 }
 
 K_WORK_DEFINE(underglow_off_work, zmk_rgb_underglow_off_handler);
